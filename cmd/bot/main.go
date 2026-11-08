@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"go.mau.fi/whatsmeow"
@@ -42,6 +45,21 @@ func main() {
 		}
 	})
 
+	if client.Store.ID == nil {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("✨۬ᩙ᜔ Ingresa tu número (sin +, ej: 5057777777): ")
+		phone, _ := reader.ReadString('\n')
+		phone = strings.TrimSpace(phone)
+		phone = strings.TrimPrefix(phone, "+")
+
+		code, err := client.PairPhone(phone, true, whatsmeow.PairClientChrome, "Cometa Core")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("🫆֟፝𑑓᮫̤٘𑑓̸̷ Código de vinculación: %s\n", code)
+		fmt.Println("> Ingresa este código en WhatsApp > Dispositivos vinculados > Vincular con número")
+	}
+
 	err = client.Connect()
 	if err != nil {
 		panic(err)
@@ -60,7 +78,7 @@ func handleMessage(evt *events.Message, client *whatsmeow.Client) {
 		{"𝐀⵿𝐧𝐢⵿𝐦⵿𝐞", []string{".anime", ".animesearch", ".buscaranime", ".ani"}},
 		{"𝐁⵿𝐮𝐬⵿𝐪𝐮⵿𝐞𝐝⵿𝐚", []string{".peli", ".movie", ".film", ".pelicula"}},
 		{"𝐂⵿𝐚⵿𝐧𝐯⵿𝐚", []string{".xnxx", ".xnxxcard", ".xcard", ".bratanime", ".brat", ".animebrat"}},
-		{"𝐃⵿𝐞𝐬⵿𝐜𝐚⵿𝐫𝐠𝐚⵿𝐬", []string{".play", ".p", ".musica", ".reproductor", ".song", ".play2", ".playvideo", ".video", ".applemusic", ".amusic", ".am", ".applemusicdl", ".instagram", ".ig", ".igdl", ".instadl", ".insta", ".mediafire", ".mf", ".mfdl", ".mediafiredl", ".fb", ".facebook", ".fbdl", ".facebookdl", ".letra", ".lyrics", ".letras", ".karaoke", ".reproductor", ".pinterest", ".pin", ".pinterestimg", ".soundcloud", ".sc", ".sound", ".spotify", ".sp", ".spoti", ".spotifydl", ".tt", ".tiktok", ".tk", ".ttv", ".tiktokdl", ".tiktoksearch", ".xvideos", ".xv", ".xvsearch", ".xvdl"}},
+		{"𝐃⵿𝐞𝐬⵿𝐜𝐚⵿𝐫𝐠𝐚⵿𝐬", []string{".play",  ".musica", ".reproductor", ".song", ".play2", ".playvideo", ".video", ".applemusic", ".amusic", ".am", ".applemusicdl", ".instagram", ".ig", ".igdl", ".instadl", ".insta", ".mediafire", ".mf", ".mfdl", ".mediafiredl", ".fb", ".facebook", ".fbdl", ".facebookdl", ".letra", ".lyrics", ".letras", ".karaoke", ".reproductor", ".pinterest", ".pin", ".pinterestimg", ".soundcloud", ".sc", ".sound", ".spotify", ".sp", ".spoti", ".spotifydl", ".tt", ".tiktok", ".tk", ".ttv", ".tiktokdl", ".tiktoksearch", ".xvideos", ".xv", ".xvsearch", ".xvdl"}},
 		{"𝐅⵿𝐮⵿𝐧", []string{".adoptar", ".adopt", ".hijo", ".hija", ".adoptados", ".misadoptados", ".listaadoptados", ".rw", ".recompensa", ".mascota", ".pet", ".tamagotchi", ".mascotas", ".ship", ".pareja", ".amor", ".compatibilidad", ".shippear", ".8ball", ".bola", ".magicball", ".adivinanza", ".acertijo", ".adivinanzacancelar", ".cancelaradivinanza", ".akinador", ".aki", ".genio", ".adivina", ".chiste", ".chistes", ".dado", ".dados", ".dino", ".dinosaurio", ".trex", ".chrome", ".doxeo", ".dox", ".fakedox", ".info", ".encuesta", ".poll", ".fake", ".fakem", ".fakemessage", ".falso", ".prediccion", ".predecir", ".futuro", ".oraculo", ".lid", ".lo.inocente.de", ".men", ".memoria", ".memory", ".juego", ".pelea", ".batalla", ".combate", ".fight", ".duelo", ".ppt", ".piedrapapeltijera", ".prehot", ".preguntahot", ".hot", ".runner", ".correr", ".esquivar", ".lane", ".snake", ".viborita", ".serpiente", ".tetris", ".tetriscancelar", ".cancelar.tetris", ".top", ".toplocos", ".ranking", ".trivia", ".preguntados", ".triviacancelar", ".cancelartrivia", ".ttt", ".tresenraya", ".teteti", ".tttcancelar", ".cancelarttt", ".verdad", ".pregunta.verdad"}},
 		{"𝐄⵿𝐜𝐨⵿𝐧𝐨⵿𝐦𝐢⵿𝐚", []string{".rw", ".recompensa", ".top", ".toplocos", ".ranking"}},
 	}
@@ -82,15 +100,15 @@ func handleMessage(evt *events.Message, client *whatsmeow.Client) {
 
 	client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
 		ImageMessage: &waE2E.ImageMessage{
-			Caption:     &caption,
-			Mimetype:    proto.String("image/jpeg"),
+			Caption:       &caption,
+			Mimetype:      proto.String("image/jpeg"),
 			JpegThumbnail: uploaded.Content[:32],
-			Url:         &uploaded.URL,
-			DirectPath:  &uploaded.DirectPath,
-			MediaKey:    uploaded.MediaKey,
+			Url:           &uploaded.URL,
+			DirectPath:    &uploaded.DirectPath,
+			MediaKey:      uploaded.MediaKey,
 			FileEncSha256: uploaded.FileEncSHA256,
-			FileSha256:  uploaded.FileSHA256,
-			FileLength:  proto.Uint64(uint64(len(img))),
+			FileSha256:    uploaded.FileSHA256,
+			FileLength:    proto.Uint64(uint64(len(img))),
 		},
 	})
 }
