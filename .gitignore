@@ -1,0 +1,20 @@
+# Bases de datos
+*.db
+*.db-shm
+*.db-wal
+cometa.db*
+cometa_economy.db*
+
+# Assets locales (imágenes grandes)
+assets/
+
+# Binarios
+main
+bot
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

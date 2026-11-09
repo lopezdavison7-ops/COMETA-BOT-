@@ -1,113 +1,66 @@
 package handler
 
 import (
-	"context"
-	"strings"
-	"time"
+"fmt"
+"strings"
 
-	"go.mau.fi/whatsmeow"
-	"go.mau.fi/whatsmeow/proto/waE2E"
-	"go.mau.fi/whatsmeow/types/events"
-	"google.golang.org/protobuf/proto"
+"go.mau.fi/whatsmeow"
+"go.mau.fi/whatsmeow/types/events"
 
-	"cometa-bot/internal/ui"
+"cometa-bot/internal/registry"
+
+_ "cometa-bot/internal/commands/economia"
+_ "cometa-bot/internal/commands/system"
 )
 
-type CommandFunc func(evt *events.Message, client *whatsmeow.Client, args []string)
-
-var commands = map[string]CommandFunc{}
-
-func Register(name string, fn CommandFunc) {
-	commands[name] = fn
+func getText(evt *events.Message) string {
+if evt.Message == nil {
+return ""
 }
-
-func init() {
-	Register("ping", cmdPing)
-	Register("menu", cmdMenu)
-	Register("help", cmdMenu)
+if text := evt.Message.GetConversation(); text != "" {
+return text
+}
+if ext := evt.Message.GetExtendedTextMessage(); ext != nil {
+return ext.GetText()
+}
+if img := evt.Message.GetImageMessage(); img != nil {
+return img.GetCaption()
+}
+if vid := evt.Message.GetVideoMessage(); vid != nil {
+return vid.GetCaption()
+}
+if doc := evt.Message.GetDocumentMessage(); doc != nil {
+return doc.GetCaption()
+}
+return ""
 }
 
 func Route(evt *events.Message, client *whatsmeow.Client) {
-	text := strings.TrimSpace(evt.Message.GetConversation())
-	if !strings.HasPrefix(text, ".") {
-		return
-	}
-
-	parts := strings.Fields(text)
-	cmd := strings.ToLower(strings.TrimPrefix(parts[0], "."))
-	args := parts[1:]
-
-	if fn, ok := commands[cmd]; ok {
-		go fn(evt, client, args)
-	}
+text := strings.TrimSpace(getText(evt))
+if text == "" || !strings.HasPrefix(text, "/") {
+return
 }
 
-func cmdPing(evt *events.Message, client *whatsmeow.Client, _ []string) {
-	start := time.Now()
-
-	b := strings.Builder{}
-	b.Grow(300)
-	b.WriteString("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `🏓 PING` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n")
-	b.WriteString("> ㅤ\n")
-	b.WriteString("🫆֟፝𑑓᮫̤٘𑑓̸̷ ᴄᴀʟᴄᴜʟᴀɴᴅᴏ ʟᴀᴛᴇɴᴄɪᴀ...\n")
-	b.WriteString("╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞")
-
-	msgID, err := client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
-		ExtendedTextMessage: &waE2E.ExtendedTextMessage{
-			Text: proto.String(b.String()),
-		},
-	})
-	if err != nil {
-		return
-	}
-
-	latency := time.Since(start)
-
-	b.Reset()
-	b.Grow(300)
-	b.WriteString("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `🏓 PONG` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n")
-	b.WriteString("> ㅤ\n")
-	b.WriteString("🫆֟፝𑑓᮫̤٘𑑓̸̷ ʟᴀᴛᴇɴᴄɪᴀ: ")
-	b.WriteString(latency.Round(time.Millisecond).String())
-	b.WriteString("\n🫆֟፝𑑓᮫̤٘𑑓̸̷ ᴇsᴛᴀᴅᴏ: ᴀᴄᴛɪᴠᴏ ☄️\n")
-	b.WriteString("╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞")
-
-	client.SendMessageResponse(context.Background(), evt.Info.Chat, msgID.ID, &waE2E.Message{
-		ExtendedTextMessage: &waE2E.ExtendedTextMessage{
-			Text: proto.String(b.String()),
-		},
-	})
+parts := strings.Fields(text)
+if len(parts) == 0 {
+return
 }
 
-func cmdMenu(evt *events.Message, client *whatsmeow.Client, _ []string) {
-	cats := []ui.Category{
-		{"𝐒⵿𝐢⵿𝐬⵿𝐭⵿𝐞⵿𝐦⵿𝐚", []string{".ping", ".menu", ".help"}},
-	}
+cmd := strings.ToLower(strings.TrimPrefix(parts[0], "/"))
+if cmd == "" {
+return
+}
 
-	img, caption, err := ui.RenderMenu("Luis González", "3.0.0-Go", cats, time.Time{})
-	if err != nil {
-		client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
-			ExtendedTextMessage: &waE2E.ExtendedTextMessage{Text: &caption},
-		})
-		return
-	}
+args := parts[1:]
 
-	uploaded, err := client.Upload(context.Background(), img, whatsmeow.MediaImage)
-	if err != nil {
-		return
-	}
-
-	client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
-		ImageMessage: &waE2E.ImageMessage{
-			Caption:       &caption,
-			Mimetype:      proto.String("image/jpeg"),
-			JpegThumbnail: uploaded.Content[:32],
-			Url:           &uploaded.URL,
-			DirectPath:    &uploaded.DirectPath,
-			MediaKey:      uploaded.MediaKey,
-			FileEncSha256: uploaded.FileEncSHA256,
-			FileSha256:    uploaded.FileSHA256,
-			FileLength:    proto.Uint64(uint64(len(img))),
-		},
-	})
+if command := registry.Get(cmd); command != nil {
+go func() {
+defer func() {
+if r := recover(); r != nil {
+NotifyOwners(client, fmt.Sprintf("Pánico en /%s\nError: %v\nUser: %s", cmd, r, evt.Info.Sender.String()))
+}
+}()
+command.Handler(evt, client, args)
+}()
+}
 }
