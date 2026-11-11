@@ -1,45 +1,103 @@
 package registry
 
 import (
+"sort"
+"sync"
+
 "go.mau.fi/whatsmeow"
 "go.mau.fi/whatsmeow/types/events"
 )
-
-type CommandFunc func(evt *events.Message, client *whatsmeow.Client, args []string)
 
 type Command struct {
 Name        string
 Aliases     []string
 Description string
 Category    string
-Handler     CommandFunc
+Handler     func(evt *events.Message, client *whatsmeow.Client, args []string)
 }
 
-var commands = map[string]*Command{}
+var (
+commands = make(map[string]*Command)
+aliases  = make(map[string]string)
+mu       sync.RWMutex
+)
 
 func Register(cmd *Command) {
+mu.Lock()
+defer mu.Unlock()
 commands[cmd.Name] = cmd
 for _, alias := range cmd.Aliases {
-commands[alias] = cmd
+aliases[alias] = cmd.Name
 }
 }
 
 func Get(name string) *Command {
-return commands[name]
+mu.RLock()
+defer mu.RUnlock()
+if cmd, ok := commands[name]; ok {
+return cmd
+}
+if realName, ok := aliases[name]; ok {
+return commands[realName]
+}
+return nil
 }
 
-func GetAll() map[string]*Command {
-return commands
+func Count() int {
+mu.RLock()
+defer mu.RUnlock()
+return len(commands)
 }
 
-func GetAllUnique() []*Command {
-seen := map[string]bool{}
-result := []*Command{}
+func Categories() []string {
+mu.RLock()
+defer mu.RUnlock()
+
+catSet := make(map[string]bool)
 for _, cmd := range commands {
-if !seen[cmd.Name] {
-seen[cmd.Name] = true
-result = append(result, cmd)
+if cmd.Category != "" {
+catSet[cmd.Category] = true
 }
 }
-return result
+
+var cats []string
+for cat := range catSet {
+cats = append(cats, cat)
+}
+sort.Strings(cats)
+return cats
+}
+
+func GetByCategory(category string) []*Command {
+mu.RLock()
+defer mu.RUnlock()
+
+var cmds []*Command
+for _, cmd := range commands {
+if cmd.Category == category {
+cmds = append(cmds, cmd)
+}
+}
+
+sort.Slice(cmds, func(i, j int) bool {
+return cmds[i].Name < cmds[j].Name
+})
+
+return cmds
+}
+
+func AllCommands() []*Command {
+mu.RLock()
+defer mu.RUnlock()
+
+var cmds []*Command
+for _, cmd := range commands {
+cmds = append(cmds, cmd)
+}
+
+sort.Slice(cmds, func(i, j int) bool {
+return cmds[i].Name < cmds[j].Name
+})
+
+return cmds
 }

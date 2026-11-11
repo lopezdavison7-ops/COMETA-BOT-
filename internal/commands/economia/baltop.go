@@ -7,6 +7,7 @@ import (
 
 "go.mau.fi/whatsmeow"
 "go.mau.fi/whatsmeow/proto/waE2E"
+"go.mau.fi/whatsmeow/types"
 "go.mau.fi/whatsmeow/types/events"
 "google.golang.org/protobuf/proto"
 
@@ -17,8 +18,8 @@ import (
 func init() {
 registry.Register(&registry.Command{
 Name:        "baltop",
-Aliases:     []string{"top", "leaderboard", "ricos"},
-Description: "muestra el ranking de los usuarios con más cometas",
+Aliases:     []string{"top", "ranking", "topsaldo"},
+Description: "muestra el ranking de los más ricos",
 Category:    "𝐄⵿𝐜𝵿𝐨⵿𝐧𝐨⵿𝐦⵿𝐢⵿𝐚",
 Handler:     BalTop,
 })
@@ -29,39 +30,34 @@ if store.GlobalEconomy == nil {
 return
 }
 
-tops, err := store.GlobalEconomy.GetTopUsers(10)
-if err != nil || len(tops) == 0 {
+tops := store.GlobalEconomy.GetTop(10)
+if len(tops) == 0 {
 client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
 ExtendedTextMessage: &waE2E.ExtendedTextMessage{
-Text: proto.String("❌ No hay datos en el ranking aún."),
+Text: proto.String("Aún no hay usuarios con saldo."),
+ContextInfo: &waE2E.ContextInfo{QuotedMessage: evt.Message},
 },
 })
 return
 }
 
 b := strings.Builder{}
-b.WriteString("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `🏆 TOP COMETAS` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n> ㅤ\n")
+b.WriteString("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `🏆 BAL TOP` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n> ㅤ\n")
 
-medals := []string{"🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"}
-mentions := []string{}
-
-for i, top := range tops {
-medal := "🔹"
-if i < len(medals) {
-medal = medals[i]
+var mentions []string
+for i, u := range tops {
+jid, _ := types.ParseJID(u.JID)
+b.WriteString(fmt.Sprintf("🫆֟፝𑑓᮫̤٘𑑓̸̷ *%d.* @%s (%d cometas - Nvl %d)\n", i+1, jid.User, u.Balance, u.Level))
+mentions = append(mentions, u.JID)
 }
-user := strings.Split(top.JID, "@")[0]
-b.WriteString(fmt.Sprintf("%s *%d.* @%s → *%d* ☄️\n", medal, top.Rank, user, top.Balance))
-mentions = append(mentions, top.JID)
-}
-
 b.WriteString("╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞")
 
 client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
 ExtendedTextMessage: &waE2E.ExtendedTextMessage{
 Text: proto.String(b.String()),
 ContextInfo: &waE2E.ContextInfo{
-MentionedJID: mentions,
+QuotedMessage: evt.Message,
+MentionedJID:  mentions,
 },
 },
 })

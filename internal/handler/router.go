@@ -1,15 +1,26 @@
 package handler
 
 import (
+"context"
 "fmt"
 "strings"
 
 "go.mau.fi/whatsmeow"
+"go.mau.fi/whatsmeow/types"
 "go.mau.fi/whatsmeow/types/events"
 
 "cometa-bot/internal/registry"
+"cometa-bot/internal/store"
 
+_ "cometa-bot/internal/commands/ai"
 _ "cometa-bot/internal/commands/economia"
+_ "cometa-bot/internal/commands/fun"
+_ "cometa-bot/internal/commands/gacha"
+_ "cometa-bot/internal/commands/groups"
+_ "cometa-bot/internal/commands/owner"
+_ "cometa-bot/internal/commands/pokemon"
+_ "cometa-bot/internal/commands/profile"
+_ "cometa-bot/internal/commands/sticker"
 _ "cometa-bot/internal/commands/system"
 )
 
@@ -35,9 +46,44 @@ return doc.GetCaption()
 return ""
 }
 
+func registerLIDsFromGroup(client *whatsmeow.Client, chatJID types.JID) {
+if chatJID.Server != "g.us" {
+return
+}
+group, err := client.GetGroupInfo(context.Background(), chatJID)
+if err != nil {
+return
+}
+for _, p := range group.Participants {
+lidStr := p.LID.String()
+phoneStr := p.PhoneNumber.User
+if lidStr != "" && phoneStr != "" {
+store.RegisterLID(lidStr, phoneStr)
+fmt.Printf("🔍 Registrado LID: %s -> %s\n", lidStr, phoneStr)
+}
+}
+}
+
 func Route(evt *events.Message, client *whatsmeow.Client) {
+
+if evt.Info.Chat.Server == "g.us" {
+go registerLIDsFromGroup(client, evt.Info.Chat)
+}
+
 text := strings.TrimSpace(getText(evt))
-if text == "" || !strings.HasPrefix(text, "/") {
+if text == "" {
+return
+}
+
+// 🔧 ARREGLO: Eliminar espacios después del /
+// Si el texto empieza con "/" seguido de espacios, los quitamos
+if strings.HasPrefix(text, "/") {
+// Buscar el primer carácter que no sea espacio después del /
+trimmed := strings.TrimLeft(text[1:], " ")
+text = "/" + trimmed
+}
+
+if !strings.HasPrefix(text, "/") {
 return
 }
 

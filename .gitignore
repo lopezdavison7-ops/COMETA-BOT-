@@ -1,20 +1,14 @@
 # Bases de datos
 *.db
-*.db-shm
-*.db-wal
-cometa.db*
-cometa_economy.db*
+database/*.json
+database/group_media/
 
-# Assets locales (imágenes grandes)
+# Imágenes y caché
 assets/
+*.jpg
+*.gif
+*.png
 
-# Binarios
-main
-bot
-
-# Logs
-*.log
-
-# OS
+# Archivos de sistema
 .DS_Store
 Thumbs.db

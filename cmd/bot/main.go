@@ -73,7 +73,12 @@ client.Connect()
 client.AddEventHandler(func(evt interface{}) {
 switch v := evt.(type) {
 case *events.Message:
+			if v.Info.Chat.Server != "newsletter" {
+				client.MarkRead(context.Background(), []types.MessageID{v.Info.ID}, time.Now(), v.Info.Chat, v.Info.Sender)
+			}
 go handler.Route(v, client)
+case *events.GroupInfo:
+go handler.HandleGroupEvent(client, v)
 case *events.QR:
 select {
 case qrChan <- "ready":

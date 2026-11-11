@@ -32,18 +32,30 @@ return
 jid := evt.Info.Sender.String()
 amount := rand.Intn(41) + 30
 msg, err := store.GlobalEconomy.Work(jid, amount, 360)
+
+var prefix string
 if err != nil {
-msg = "❌ Error al procesar tu trabajo."
+if err.Error() == "cooldown" {
+prefix = "⏳ "
+} else {
+prefix = "❌ "
+msg = "Ocurrió un error al procesar tu trabajo."
+}
+} else {
+prefix = "💰 "
 }
 
 b := strings.Builder{}
-b.WriteString("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `💰 WORK` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n> ㅤ\n")
-b.WriteString("🫆֟፝𑑓᮫̤٘𑑓̸̷ " + msg + "\n")
+b.WriteString("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `WORK` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n> ㅤ\n")
+b.WriteString("🫆֟፝𑑓᮫̤٘𑑓̸̷ " + prefix + msg + "\n")
 b.WriteString("╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞")
 
 client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
 ExtendedTextMessage: &waE2E.ExtendedTextMessage{
 Text: proto.String(b.String()),
+ContextInfo: &waE2E.ContextInfo{
+QuotedMessage: evt.Message,
+},
 },
 })
 }
