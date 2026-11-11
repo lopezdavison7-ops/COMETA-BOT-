@@ -17,17 +17,21 @@ import (
 
 var startTime = time.Now()
 
+// Datos de tu canal
+const canalJID = "120363429914158508@newsletter"
+const canalName = "COMETA-BOT "
+
 var catAliases = map[string]string{
-"grupos":   "𝐆⵿𝐫⵿𝐮⵿𝐩⵿𝐨⵿𝐬",
-"economia": "𝐄⵿𝐜𝐨⵿𝐧𝐨⵿𝐦⵿𝐢⵿𝐚",
-"gacha":    "𝐆⵿𝐚⵿𝐜⵿𝐡⵿𝐚",
-"sistema":  "𝐒⵿𝐢⵿𝐬⵿𝐭⵿𝐞⵿𝐦⵿𝐚",
-"owner":    "𝐎⵿𝐰⵿𝐧⵿𝐞⵿𝐫",
-"pokemon":  "𝐏⵿𝐨⵿𝐤⵿𝐞⵿𝐦⵿𝐨⵿𝐧",
-"perfil":   "𝐏⵿𝐞⵿𝐫⵿𝐟⵿𝐢⵿𝐥",
-"juegos":   "𝐉⵿𝐮⵿𝐞⵿𝐠⵿𝐨⵿𝐬",
-"sticker":  "𝐒⵿𝐭⵿𝐢⵿𝐜⵿𝐤⵿𝐞⵿𝐫",
-"ia":       "𝐈⵿𝐧⵿𝐭⵿𝐞⵿𝐥⵿𝐢⵿𝐠⵿𝐞⵿𝐧⵿𝐜⵿𝐢⵿𝐚",
+"grupos":   "𝐆⵿𝐫⵿⵿𝐩⵿⵿𝐬",
+"economia": "𝐄⵿𝵿𝐨⵿𝐨⵿𝐦𝐢⵿𝐚",
+"gacha":    "𝐆⵿𝐚⵿⵿𝐡⵿𝐚",
+"sistema":  "𝐒⵿𝐢𝐬⵿⵿𝐞𝐦⵿𝐚",
+"owner":    "𝐎⵿𝐰⵿𝐧𝐞⵿𝐫",
+"pokemon":  "𝐏⵿𝐨⵿⵿𝐞𝐦⵿𝐨𝐧",
+"perfil":   "𝐏⵿⵿𝐫𝐟⵿𝐢𝐥",
+"juegos":   "𝐉⵿⵿𝐞⵿⵿𝐨⵿𝐬",
+"sticker":  "𝐒⵿𝐭𝐢⵿𝐜𝐤⵿𝐞𝐫",
+"ia":       "𝐈⵿𝐧⵿𝐭⵿𝐞⵿𝐥𝐢⵿⵿𝐞⵿⵿𝐜⵿⵿𝐚",
 }
 
 func init() {
@@ -48,21 +52,21 @@ categories := registry.Categories()
 var b strings.Builder
 
 // Header aesthetic
-b.WriteString(fmt.Sprintf(`✨۬ᩙ᜔ Hola %s, Ⴆιҽɳʋҽɳιԃσ α ɱι ɱҽɳυ ԃҽ ƈσɱαɳԃσʂ   𐔌՞ ܸ.ˬ.ܸ ՞𐦯
+b.WriteString(fmt.Sprintf(`✨۬ᩙ᜔ Hola %s, Ⴆιɳʋҽɳιԃσ α ɱι ɱҽɳυ ԃҽ ƈσɱαɳԃσʂ   𐔌՞ ܸ.ˬ.ܸ ՞
 
-✨۬ᩙ᜔ ☄️ Ꮯ𝗈𝗆𝖾𝗍𝖺    ̶͞ᵇ꯭ᵒᵗ 🍒ި᜔⃞🌸ᩙ᜔
+✨᜔۬ ☄️ Ꮯ𝗈𝗆𝖾𝗍𝖺    ̶꯭͞ᵒᵗ 🍒ި᜔⃞ᩙ᜔
 
-┎╌͜╍͜╌͜─፝͜─͜─͜─͜─፝͜─͜─֟፝͜͠⃞─͜─፝͜─͜─͜─፝͜─͜─͜╌͜━㍃゙⃞
+┎╌͜╍͜╌͜─͜─͜─͜─͜─፝͜─͜─֟፝͜͠⃞─͜─፝͜─͜─͜─፝͜─͜─͜╌͜━㍃⃞
 > ㅤ
-> 𖤐⭒๋࣭ ⭑ `+"`𝗜⵿𝗡⵿𝗙⵿𝗢 ⵿𝗕⵿𝗢⵿𝗧`"+` ᩘ📊⃞゙ᩧ ⭑๋࣭⭒𖤐
+> 𖤐⭒๋࣭  `+"`𝗜⵿⵿𝗙𝗢 ⵿𝗕⵿𝗢⵿𝗧`"+` ᩘ⃞゙ᩧ ๋࣭⭒𖤐
 > ㅤ
-> ❐፞․̸̷̤๐  ᴄʀᴇᴀᴅᴏʀ :: 🎀devluis🍒
-> ❐፞․̸̷̤๐  ᴠᴇʀ𝘴ɪᴏ́ɴ  :: 2.0-Go
-> ❐፞․̸̷̤๐  ᴄᴏᴍᴀɴᴅᴏ𝘴 :: %d
-> ❐፞․̸̷̤๐  ᴄᴀᴛᴇɢᴏʀɪ́ᴀ𝘴 :: %d
-> ❐፞․̸̷̤๐  ᴜᴘᴛɪᴍᴇ :: %s
-> ❐፞․̸̷̤๐  ғᴇᴄʜᴀ :: %s
-┖͜╍͜╌͜─͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞
+> ፞․̸̷๐  ᴄʀᴇᴀᴅᴏʀ ::  Luis González
+> ❐፞․̸̷̤๐  ᴠᴇ𝘴ɪᴏ́ɴ  :: 3.0.0-Go
+> ❐፞․̸̷๐  ᴄᴏᴍɴᴅᴏ𝘴 :: %d
+> ❐፞․̷̤๐  ᴄᴀᴛᴇɢᴏɪ́ᴀ𝘴 :: %d
+> ❐፞․̷̤๐  ᴘᴛɪᴍᴇ :: %s
+> ❐፞․̷̤๐  ғᴇᴄʜᴀ :: %s
+͜╍͜╌͜─͜─͜─͜─͜─͜─͜─⵿፝─͜─͜──͜─͜─͜─͜─͜╌͜━゙⃞
 
 `, evt.Info.PushName, totalCommands, len(categories), uptime, time.Now().Format("02/01/2006 15:04")))
 
@@ -99,19 +103,34 @@ if len(cmds) == 0 {
 continue
 }
 
-b.WriteString(fmt.Sprintf("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `%s` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n> ㅤ\n", cat))
+b.WriteString(fmt.Sprintf("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `%s` 」፝͜─͜─͜─͜─͜╌͜━㍃゙\n> ㅤ\n", cat))
 for _, cmd := range cmds {
 b.WriteString(fmt.Sprintf("🫆֟፝𑑓᮫̤٘𑑓̸̷ /%s\n   ↳ %s\n\n", cmd.Name, cmd.Description))
 }
-b.WriteString("╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞\n\n")
+b.WriteString("╰᳕╌͜͜╌͜─͜──͜─͜─͜─֟፝─͜──͜─͜─͜──͜─͜╌━㍃゙⃞\n\n")
 }
-
-
 
 sendMenuPart(client, evt, b.String())
 }
 
+// buildContextInfo crea el ContextInfo con metadatos de canal inyectados
+func buildContextInfo(evt *events.Message) *waE2E.ContextInfo {
+return &waE2E.ContextInfo{
+ForwardingScore: proto.Uint32(999),
+IsForwarded:     proto.Bool(true),
+QuotedMessage:   evt.Message,
+// 🔮 Inyectar metadatos de newsletter para el botón "Ver canal"
+ForwardedNewsletterMessageInfo: &waE2E.ContextInfo_ForwardedNewsletterMessageInfo{
+NewsletterJID:     proto.String(canalJID),
+ServerMessageID:   proto.Int32(1),
+NewsletterName:    proto.String(canalName),
+},
+}
+}
+
 func sendMenuPart(client *whatsmeow.Client, evt *events.Message, text string) {
+ctx := buildContextInfo(evt)
+
 if cache.MenuType == "gif" && cache.MenuGIFUpload != nil {
 client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
 VideoMessage: &waE2E.VideoMessage{
@@ -124,7 +143,7 @@ FileSHA256:    cache.MenuGIFUpload.FileSHA256,
 FileLength:    proto.Uint64(cache.MenuGIFUpload.FileLength),
 Caption:       proto.String(text),
 GifPlayback:   proto.Bool(true),
-ContextInfo: &waE2E.ContextInfo{QuotedMessage: evt.Message},
+ContextInfo:   ctx,
 },
 })
 } else if cache.MenuType == "image" && cache.MenuUpload != nil {
@@ -138,14 +157,14 @@ FileEncSHA256: cache.MenuUpload.FileEncSHA256,
 FileSHA256:    cache.MenuUpload.FileSHA256,
 FileLength:    proto.Uint64(cache.MenuUpload.FileLength),
 Caption:       proto.String(text),
-ContextInfo: &waE2E.ContextInfo{QuotedMessage: evt.Message},
+ContextInfo:   ctx,
 },
 })
 } else {
 client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
 ExtendedTextMessage: &waE2E.ExtendedTextMessage{
-Text: proto.String(text),
-ContextInfo: &waE2E.ContextInfo{QuotedMessage: evt.Message},
+Text:        proto.String(text),
+ContextInfo: ctx,
 },
 })
 }
