@@ -1,7 +1,14 @@
-# Bases de datos
+# Bases de datos y archivos temporales de SQLite
 *.db
+*.db-shm
+*.db-wal
 database/*.json
 database/group_media/
+
+# Archivos de Node.js (no los usamos)
+package.json
+package-lock.json
+node_modules/
 
 # Imágenes y caché
 assets/
