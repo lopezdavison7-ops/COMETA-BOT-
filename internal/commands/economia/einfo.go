@@ -127,8 +127,6 @@ func EInfo(evt *events.Message, client *whatsmeow.Client, _ []string) {
 		"╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `🪙 SISTEMA ECONÓMICO` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n> ㅤ\n",
 	)
 
-	// Estado personal.
-
 	body.WriteString("*📊 INFORMACIÓN PERSONAL*\n")
 	body.WriteString(fmt.Sprintf("👛 *Billetera:* %d cometas\n", balance))
 	body.WriteString(fmt.Sprintf("🏦 *Banco:* %d cometas\n", bank))
@@ -137,8 +135,6 @@ func EInfo(evt *events.Message, client *whatsmeow.Client, _ []string) {
 	body.WriteString(fmt.Sprintf("✨ *Experiencia:* %d/%d XP\n", xp, neededXP))
 
 	body.WriteString("\n━━━━━━━━━━━━━━━━━━\n")
-
-	// Actividades individuales.
 
 	body.WriteString("*⚒️ ACTIVIDADES ECONÓMICAS*\n")
 	body.WriteString("Consigue cometas y experiencia mediante diferentes actividades.\n\n")
@@ -156,8 +152,6 @@ func EInfo(evt *events.Message, client *whatsmeow.Client, _ []string) {
 
 	body.WriteString("\n━━━━━━━━━━━━━━━━━━\n")
 
-	// Recompensas periódicas.
-
 	body.WriteString("*🎁 RECOMPENSAS PERIÓDICAS*\n")
 
 	appendEInfoCooldown(&body, jid, "/daily", "Recompensa diaria", "daily", 86400)
@@ -168,19 +162,15 @@ func EInfo(evt *events.Message, client *whatsmeow.Client, _ []string) {
 
 	body.WriteString("\n━━━━━━━━━━━━━━━━━━\n")
 
-	// Banco y gestión.
-
 	body.WriteString("*🏦 BANCO Y ADMINISTRACIÓN*\n")
 	body.WriteString("💰 `/bal` — Consulta tu billetera, banco y experiencia.\n")
 	body.WriteString("📥 `/dep <cantidad>` — Deposita cometas.\n")
 	body.WriteString("📤 `/with <cantidad>` — Retira cometas.\n")
-	body.WriteString("💸 `/pay <cantidad> @usuario` — Transfiere cometas.\n")
+	body.WriteString("💸 `/pay @usuario <cantidad>` — Transfiere cometas.\n")
 
 	appendEInfoCooldown(&body, jid, "/rob @usuario", "Intentar robar cometas", "rob", 3600)
 
 	body.WriteString("\n━━━━━━━━━━━━━━━━━━\n")
-
-	// Misiones y progresión.
 
 	body.WriteString("*🎯 MISIONES Y PROGRESIÓN*\n")
 	body.WriteString("📋 `/mission` — Consulta tus misiones económicas.\n")
@@ -189,8 +179,6 @@ func EInfo(evt *events.Message, client *whatsmeow.Client, _ []string) {
 	body.WriteString("💎 `/baltop` — Ranking de riqueza.\n")
 
 	body.WriteString("\n━━━━━━━━━━━━━━━━━━\n")
-
-	// Tienda y objetos.
 
 	body.WriteString("*🛒 TIENDA, HERRAMIENTAS Y OBJETOS*\n")
 	body.WriteString("🏪 `/shop` — Consulta todos los objetos disponibles.\n")
@@ -235,16 +223,12 @@ func EInfo(evt *events.Message, client *whatsmeow.Client, _ []string) {
 
 	body.WriteString("\n━━━━━━━━━━━━━━━━━━\n")
 
-	// Apuestas clásicas.
-
 	body.WriteString("*🎰 APUESTAS CLÁSICAS*\n")
 	body.WriteString("🪙 `/flip` — Cara o cruz · ⏳ Sin cooldown.\n")
 	body.WriteString("🎡 `/roulette` — Ruleta de colores y números · ⏳ Sin cooldown.\n")
 	body.WriteString("🎰 `/slots` — Máquina tragamonedas · ⏳ Sin cooldown.\n")
 
 	body.WriteString("\n━━━━━━━━━━━━━━━━━━\n")
-
-	// Apuestas nuevas.
 
 	body.WriteString("*🎲 JUEGOS DE APUESTAS*\n")
 	body.WriteString("🎲 `/dice` — Apuesta con dados · ⏳ Sin cooldown.\n")
@@ -264,8 +248,6 @@ func EInfo(evt *events.Message, client *whatsmeow.Client, _ []string) {
 	body.WriteString("⚔️ `/war` — Guerra de cartas · ⏳ Sin cooldown.\n")
 
 	body.WriteString("\n📖 `/bethelp` — Ayuda e instrucciones de apuestas.\n")
-
-	// Nota discreta al final.
 
 	allwCooldown := getEInfoCooldown(jid, "allw", 3600)
 
