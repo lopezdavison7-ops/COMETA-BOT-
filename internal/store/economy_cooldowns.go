@@ -6,9 +6,21 @@ import (
 )
 
 var allowedCooldownActions = map[string]bool{
-	"work": true, "daily": true, "rob": true, "beg": true,
-	"mine": true, "adventure": true, "fish": true, "slut": true,
-	"hunt": true, "dig": true, "talar": true, "crime": true, "allw": true,
+	"work":      true,
+	"daily":     true,
+	"weekly":    true,
+	"monthly":   true,
+	"rob":       true,
+	"beg":       true,
+	"mine":      true,
+	"adventure": true,
+	"fish":      true,
+	"slut":      true,
+	"hunt":      true,
+	"dig":       true,
+	"talar":     true,
+	"crime":     true,
+	"allw":      true,
 }
 
 func (s *EconomyStore) GetCooldown(jid, action string) int64 {
@@ -17,6 +29,7 @@ func (s *EconomyStore) GetCooldown(jid, action string) int64 {
 	}
 
 	var lastUse int64
+
 	query := `SELECT COALESCE(last_` + action + `, 0) FROM users WHERE jid = ?`
 	_ = s.db.QueryRow(query, jid).Scan(&lastUse)
 
@@ -32,6 +45,7 @@ func (s *EconomyStore) SetCooldown(jid, action string) {
 
 	now := time.Now().Unix()
 	query := `UPDATE users SET last_` + action + ` = ? WHERE jid = ?`
+
 	_, _ = s.db.Exec(query, now, jid)
 }
 
@@ -81,7 +95,9 @@ func (s *EconomyStore) AddColumnIfNotExists(columnName string) {
 	}
 
 	if !cols[columnName] {
-		_, _ = s.db.Exec(`ALTER TABLE users ADD COLUMN ` + columnName + ` INTEGER DEFAULT 0`)
+		_, _ = s.db.Exec(
+			`ALTER TABLE users ADD COLUMN `+columnName+` INTEGER DEFAULT 0`,
+		)
 	}
 }
 
@@ -104,6 +120,8 @@ func (s *EconomyStore) InitCooldownColumns() {
 		"last_talar",
 		"last_crime",
 		"last_allw",
+		"last_weekly",
+		"last_monthly",
 	}
 
 	for _, column := range columns {
