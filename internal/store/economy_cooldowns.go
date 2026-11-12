@@ -61,6 +61,5 @@ func (s *EconomyStore) InitCooldownColumns() {
 	s.AddColumnIfNotExists("last_adventure")
 	s.AddColumnIfNotExists("last_fish")
 	s.AddColumnIfNotExists("last_slut")
-	s.AddColumnIfNotExists("last_weekly")
-	s.AddColumnIfNotExists("last_monthly")
+	s.AddColumnIfNotExists("last_allw")
 }
