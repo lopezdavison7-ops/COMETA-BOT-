@@ -1,3 +1,4 @@
+
 package economia
 
 import (
@@ -34,10 +35,8 @@ func resolveInventoryItem(jid, selector string) string {
 
 	for _, inventoryItem := range store.GetShopInventory(jid) {
 		item, ok := store.GetItem(inventoryItem.ItemID)
-		if ok && (
-			strings.ToLower(item.Name) == selector ||
-				strings.ToLower(item.ID) == selector,
-		) {
+		if ok && (strings.ToLower(item.Name) == selector ||
+			strings.ToLower(item.ID) == selector) {
 			return inventoryItem.ItemID
 		}
 	}
