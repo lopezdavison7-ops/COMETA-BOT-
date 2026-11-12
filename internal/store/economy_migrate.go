@@ -14,8 +14,7 @@ func mustMigrateEconomy(db *sql.DB) {
 			bank INTEGER DEFAULT 0,
 			last_work INTEGER DEFAULT 0,
 			last_daily INTEGER DEFAULT 0,
-			last_weekly INTEGER DEFAULT 0,
-			last_monthly INTEGER DEFAULT 0,
+			last_allw INTEGER DEFAULT 0,
 			last_rob INTEGER DEFAULT 0,
 			last_beg INTEGER DEFAULT 0,
 			xp INTEGER DEFAULT 0,
@@ -47,7 +46,6 @@ func mustMigrateEconomy(db *sql.DB) {
 			rows.Close()
 			return
 		}
-
 		cols[name] = true
 	}
 
@@ -56,20 +54,18 @@ func mustMigrateEconomy(db *sql.DB) {
 		rows.Close()
 		return
 	}
-
 	rows.Close()
 
 	needed := map[string]string{
-		"balance":      "INTEGER DEFAULT 0",
-		"bank":         "INTEGER DEFAULT 0",
-		"last_work":    "INTEGER DEFAULT 0",
-		"last_daily":   "INTEGER DEFAULT 0",
-		"last_weekly":  "INTEGER DEFAULT 0",
-		"last_monthly": "INTEGER DEFAULT 0",
-		"last_rob":     "INTEGER DEFAULT 0",
-		"last_beg":     "INTEGER DEFAULT 0",
-		"xp":           "INTEGER DEFAULT 0",
-		"level":        "INTEGER DEFAULT 1",
+		"balance":   "INTEGER DEFAULT 0",
+		"bank":      "INTEGER DEFAULT 0",
+		"last_work": "INTEGER DEFAULT 0",
+		"last_daily": "INTEGER DEFAULT 0",
+		"last_allw": "INTEGER DEFAULT 0",
+		"last_rob":  "INTEGER DEFAULT 0",
+		"last_beg":  "INTEGER DEFAULT 0",
+		"xp":        "INTEGER DEFAULT 0",
+		"level":     "INTEGER DEFAULT 1",
 	}
 
 	for col, def := range needed {
@@ -88,14 +84,12 @@ func mustMigrateEconomy(db *sql.DB) {
 			bank = COALESCE(bank, 0),
 			last_work = COALESCE(last_work, 0),
 			last_daily = COALESCE(last_daily, 0),
-			last_weekly = COALESCE(last_weekly, 0),
-			last_monthly = COALESCE(last_monthly, 0),
+			last_allw = COALESCE(last_allw, 0),
 			last_rob = COALESCE(last_rob, 0),
 			last_beg = COALESCE(last_beg, 0),
 			xp = COALESCE(xp, 0),
 			level = COALESCE(level, 1)
 	`)
-
 	if err != nil {
 		fmt.Println("❌ Error actualizando datos de economía:", err)
 		return
