@@ -13,14 +13,23 @@ import (
 	"cometa-bot/internal/store"
 )
 
-func sendActivityMessage(client *whatsmeow.Client, evt *events.Message, result store.ActivityResult) {
+func sendActivityMessage(
+	client *whatsmeow.Client,
+	evt *events.Message,
+	result store.ActivityResult,
+) {
 	if result.Skipped {
 		remaining := result.Remaining
-		sendEcoError(client, evt, fmt.Sprintf(
-			"⏳ Ya realizaste esta actividad. Esperá *%d min %d seg*.",
-			remaining/60,
-			remaining%60,
-		))
+
+		sendEcoError(
+			client,
+			evt,
+			fmt.Sprintf(
+				"⏳ Ya realizaste esta actividad. Esperá *%d min %d seg*.",
+				remaining/60,
+				remaining%60,
+			),
+		)
 		return
 	}
 
@@ -35,19 +44,31 @@ func sendActivityMessage(client *whatsmeow.Client, evt *events.Message, result s
 	body.WriteString("🫆֟፝𑑓᮫̤٘𑑓̸̷ " + result.Detail + "\n")
 
 	if result.Reward > 0 {
-		body.WriteString(fmt.Sprintf("💰 *Ganaste:* %d cometas\n", result.Reward))
+		body.WriteString(fmt.Sprintf(
+			"💰 *Ganaste:* %d cometas\n",
+			result.Reward,
+		))
 	} else if result.Reward < 0 {
-		body.WriteString(fmt.Sprintf("💸 *Multa:* %d cometas\n", -result.Reward))
+		body.WriteString(fmt.Sprintf(
+			"💸 *Multa:* %d cometas\n",
+			-result.Reward,
+		))
 	} else {
 		body.WriteString("💀 *No obtuviste cometas esta vez.*\n")
 	}
 
 	if result.XP > 0 {
-		body.WriteString(fmt.Sprintf("✨ *XP:* +%d\n", result.XP))
+		body.WriteString(fmt.Sprintf(
+			"✨ *XP:* +%d\n",
+			result.XP,
+		))
 	}
 
 	if result.LeveledUp {
-		body.WriteString(fmt.Sprintf("🎉 *Subiste al nivel %d.*\n", result.Level))
+		body.WriteString(fmt.Sprintf(
+			"🎉 *Subiste al nivel %d.*\n",
+			result.Level,
+		))
 	}
 
 	if result.MissionBonus > 0 {
@@ -57,7 +78,9 @@ func sendActivityMessage(client *whatsmeow.Client, evt *events.Message, result s
 		))
 	}
 
-	body.WriteString("╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞")
+	body.WriteString(
+		"╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞",
+	)
 
 	client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
 		ExtendedTextMessage: &waE2E.ExtendedTextMessage{
@@ -69,18 +92,30 @@ func sendActivityMessage(client *whatsmeow.Client, evt *events.Message, result s
 	})
 }
 
-func runNewEconomyActivity(action string, evt *events.Message, client *whatsmeow.Client) {
+func runNewEconomyActivity(
+	action string,
+	evt *events.Message,
+	client *whatsmeow.Client,
+) {
 	if store.GlobalEconomy == nil {
 		sendEcoError(client, evt, "La economía no está inicializada.")
 		return
 	}
 
-	result, err := store.GlobalEconomy.RunActivity(
-		evt.Info.Sender.String(),
-		action,
-	)
+	jid := evt.Info.Sender.String()
+
+	if missing := missingEconomyEquipmentMessage(jid, action); missing != "" {
+		sendEcoError(client, evt, missing)
+		return
+	}
+
+	result, err := store.GlobalEconomy.RunActivity(jid, action)
 	if err != nil {
-		sendEcoError(client, evt, "No se pudo procesar la actividad: "+err.Error())
+		sendEcoError(
+			client,
+			evt,
+			"No se pudo procesar la actividad: "+err.Error(),
+		)
 		return
 	}
 
