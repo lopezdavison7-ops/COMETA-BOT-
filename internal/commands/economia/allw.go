@@ -31,7 +31,14 @@ func Allw(evt *events.Message, client *whatsmeow.Client, _ []string) {
 		return
 	}
 
-	results, err := store.GlobalEconomy.AllWork(evt.Info.Sender.String())
+	jid := evt.Info.Sender.String()
+
+	if missing := missingAllwEquipmentMessage(jid); missing != "" {
+		sendEcoError(client, evt, missing)
+		return
+	}
+
+	results, err := store.GlobalEconomy.AllWork(jid)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "cooldown:") {
 			remaining, _ := strconv.ParseInt(
@@ -52,13 +59,19 @@ func Allw(evt *events.Message, client *whatsmeow.Client, _ []string) {
 			return
 		}
 
-		sendEcoError(client, evt, "No se pudieron ejecutar las actividades: "+err.Error())
+		sendEcoError(
+			client,
+			evt,
+			"No se pudieron ejecutar las actividades: "+err.Error(),
+		)
 		return
 	}
 
 	var body strings.Builder
 
-	body.WriteString("╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `⚙️ ALL WORK` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n> ㅤ\n")
+	body.WriteString(
+		"╭ᩙ╌͜╍͜╌͜─͜─͜─͜─፝͜「 `⚙️ ALL WORK` 」፝͜─͜─͜─͜─͜╌͜━㍃゙⃞\n> ㅤ\n",
+	)
 
 	total := 0
 	totalXP := 0
@@ -67,6 +80,7 @@ func Allw(evt *events.Message, client *whatsmeow.Client, _ []string) {
 
 	for _, result := range results {
 		label := result.Title
+
 		if label == "" {
 			label = strings.ToUpper(result.Action)
 		}
@@ -153,7 +167,9 @@ func Allw(evt *events.Message, client *whatsmeow.Client, _ []string) {
 		)
 	}
 
-	body.WriteString("╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞")
+	body.WriteString(
+		"╰᳕╌͜╍͜╌͜─͜─͜─͜─͜─͜─⵿֟፝─͜─͜─͜─͜─͜─͜─͜─͜╌͜━㍃゙⃞",
+	)
 
 	client.SendMessage(context.Background(), evt.Info.Chat, &waE2E.Message{
 		ExtendedTextMessage: &waE2E.ExtendedTextMessage{
